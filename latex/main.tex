@@ -1,0 +1,67 @@
+\documentclass[12pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{multirow}
+\usepackage{adjustbox}
+\usepackage{setspace}
+\usepackage{xcolor}
+
+% Formatting
+\onehalfspacing
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    citecolor=black
+}
+
+% Title and Author Information
+\title{Measuring Ad Effectiveness in an Online Marketplace}
+\author{
+    Pranjal Rawat\footnote{pp712@georgetown.com}\\
+    \textit{Georgetown University}
+}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent This paper studies the effectiveness of ads on a proprietary dataset from a large online marketplace in the US. 
+We analyze six months of granular auction data spanning all bids, impressions, clicks, and transactions. 
+A range of observational causal inference methods is applied to control for unobservable confounding and heterogeneity across users and vendors. 
+
+\vspace{0.5cm}
+\noindent \textbf{Keywords:} Incrementality, Digital Advertising, Causal Inference
+\end{abstract}
+
+% Include sections
+\input{introduction.tex}
+\input{literature.tex}
+\input{data.tex}
+\input{vendor_week.tex}
+\input{user_week.tex}
+\input{user_vendor_week.tex}
+\input{holdouts.tex}
+%\input{reconciliation.tex}
+%\input{results.tex}
+%\input{conclusion.tex}
+
+% Bibliography (commented out until .bib file is created)
+\bibliographystyle{apalike} % A common author-year style
+\bibliography{references} % Path to your .bib file based on the image
+
+
+\end{document}

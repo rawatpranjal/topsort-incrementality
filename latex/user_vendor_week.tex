@@ -1,0 +1,72 @@
+\section*{User-Vendor-Week Panel}
+
+To examine advertising effectiveness at the most granular level, we construct a user-vendor-week panel focusing on the marketplace's "power players"—the users and vendors who drive the majority of economic activity. 
+
+We employ a two-stage selection process to identify power players based on their economic significance in a pre-treatment period (May 2025). First, we identify the top vendors who collectively account for 80\% of total platform revenue. Second, among users who transacted with these top vendors, we select those whose cumulative spending represents 80\% of revenue at these vendors. This dual threshold approach ensures we focus on the most economically meaningful interactions while maintaining computational tractability.
+
+The resulting panel spans two months (June-July 2025) and captures the complete interaction history between selected users and vendors on a weekly basis. To address the inherent sparsity of purchase events in such granular data, we employ a balanced panel approach where all potential user-vendor-week combinations are included, with missing interactions coded as zeros.
+
+Table \ref{tab:uvw_panel_dims} summarizes the key dimensions of the constructed panel.
+
+\begin{table}[htbp!]
+\centering
+\caption{User-Vendor-Week Panel Dimensions}
+\label{tab:uvw_panel_dims}
+\begin{tabular}{lr}
+\toprule
+Metric & Value \\
+\midrule
+Power Users (Top 80\% spenders) & 29,153 \\
+Power Vendors (Top 80\% sellers) & 4,000 \\
+Analysis Period & 8 weeks \\
+Total Observations & 1,466,907 \\
+Balanced Panel Size & 6,706,230 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{Model}
+
+A key challenge in measuring advertising effectiveness is the temporal mismatch between exposure and conversion. Users may be influenced by ads but delay their purchase decisions, creating a lag between click and purchase events. To capture these dynamics, we specify a distributed lag fixed-effects logit model:
+
+\begin{equation}
+\Pr(\text{Purchase}_{ivt} = 1) = \Lambda(\beta_0 \cdot \text{Click}_{ivt} + \beta_1 \cdot \text{Click}_{iv,t-1} + \alpha_i + \delta_v + \gamma_t)
+\end{equation}
+
+where $\Lambda(\cdot)$ is the logistic function, $\text{Click}_{ivt}$ is a binary indicator for whether user $i$ clicked on vendor $v$'s ads in week $t$, $\text{Click}_{iv,t-1}$ is the lagged click indicator, and $\alpha_i$, $\delta_v$, and $\gamma_t$ are user, vendor, and week fixed effects, respectively.
+
+This specification allows us to decompose the total effect of advertising into two components. First, there is an \textit{immediate effect} ($\beta_0$), which captures the impact of clicks on same-week purchases. Second, there is a \textit{carryover effect} ($\beta_1$), representing the persistent influence of past advertising exposure.
+
+\subsection*{Results}
+
+Table \ref{tab:uvw_distlag_results} presents the results from the distributed lag model estimated on a 50\% random sample of users to ensure computational feasibility.
+
+\begin{table}[htbp!]
+\centering
+\caption{Distributed Lag Fixed-Effects Logit Model Results}
+\label{tab:uvw_distlag_results}
+\begin{tabular}{lc}
+\toprule
+ & Purchase (Binary) \\
+\midrule
+Had Click (Current Week) & 1.658*** \\
+ & (0.0168) \\
+Had Click (Lagged 1 Week) & 0.176*** \\
+ & (0.0252) \\
+\midrule
+User Fixed Effects & Yes \\
+Vendor Fixed Effects & Yes \\
+Week Fixed Effects & Yes \\
+Observations & 3,462,867 \\
+Pseudo R² & 0.241 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Note: Standard errors clustered at the user level in parentheses. *** p < 0.001. Approximately 670,623 observations dropped due to missing lagged values, and 2,572,740 observations removed due to fixed effects with no variation in outcomes.
+
+The coefficient of 1.658 on concurrent clicks indicates that clicking on an ad increases the odds of purchasing from that vendor in the same week by approximately 425\% ($e^{1.658} - 1 \approx 4.25$). This substantial effect suggests that clicks are a strong signal of immediate purchase intent, though we cannot fully separate selection from persuasion effects even with our rich fixed effects structure.
+
+The positive and significant coefficient on lagged clicks (0.176) demonstrates that advertising influence extends beyond the immediate period. Users who clicked on a vendor's ad in the previous week have 19\% higher odds of purchasing in the current week, even after controlling for current-period clicks. This carryover effect is consistent with models of consideration set formation and gradual persuasion.
+
+The immediate effect is approximately 9.4 times larger than the carryover effect, suggesting that while advertising has persistent influence, its impact is heavily front-loaded.

@@ -1,0 +1,47 @@
+\section*{Data}
+
+Our empirical analysis is based on a proprietary dataset with detailed auction-level records from a large US-based online marketplace, covering a continuous five-month period in 2025. The data captures all sponsored advertising interactions, from auction to purchase. This includes detailed records of auctions, ad impressions, clicks, and all purchase transactions. The scale of the data is substantial, encompassing billions of auctions and impressions, millions of clicks, and hundreds of thousands of purchases.
+
+The dataset is organized into four primary tables. Table \ref{tab:data_structure} provides a description of each table and its most salient fields.
+
+\begin{table}[htbp!]
+\centering
+\caption{Data Sources and Key Fields}
+\label{tab:data_structure}
+\begin{tabular}{p{0.15\textwidth} p{0.4\textwidth} p{0.45\textwidth}}
+\toprule
+Table & Description & Key Fields \\
+\midrule
+Auctions & Records of every ad auction triggered by a user action. & \texttt{AUCTION\_ID}, \texttt{USER\_ID}, \texttt{AUCTION\_TIMESTAMP}, \texttt{VENDOR\_ID}, \texttt{CAMPAIGN\_ID}, \texttt{PRODUCT\_ID}, \texttt{RANKING}, \texttt{IS\_WINNER} \\
+Impressions & Log of every ad successfully displayed to a user. & \texttt{INTERACTION\_ID}, \texttt{AUCTION\_ID}, \texttt{PRODUCT\_ID}, \texttt{USER\_ID}, \texttt{CAMPAIGN\_ID}, \texttt{VENDOR\_ID}, \texttt{OCCURRED\_AT} \\
+Clicks & Log of every user click on a sponsored ad. & \texttt{INTERACTION\_ID}, \texttt{AUCTION\_ID}, \texttt{PRODUCT\_ID}, \texttt{USER\_ID}, \texttt{CAMPAIGN\_ID}, \texttt{VENDOR\_ID}, \texttt{OCCURRED\_AT} \\
+Purchases & All purchase transactions within the marketplace. & \texttt{PURCHASE\_ID}, \texttt{PURCHASED\_AT}, \texttt{PRODUCT\_ID}, \texttt{QUANTITY}, \texttt{UNIT\_PRICE}, \texttt{USER\_ID} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A critical feature of this dataset is the use of a persistent \texttt{USER\_ID}, which allows for the tracking of individual user behavior across multiple sessions and over the entire observation period. The \texttt{AUCTION\_ID} serves as a common key to link the auctions, impressions, and clicks tables, enabling the reconstruction of the user journey from initial ad exposure to a potential purchase.
+
+Table \ref{tab:summary_stats} presents aggregate daily statistics for the platform. These figures represent the average daily volumes and key performance indicators over the five-month sample period.
+
+\begin{table}[htbp!]
+\centering
+\caption{Average Daily Platform Statistics}
+\label{tab:summary_stats}
+\begin{tabular}{lr}
+\toprule
+Metric & Value \\
+\midrule
+Total Search Events & 7,420,764 \\
+Total Bids Submitted & 268,105,571 \\
+Total Impressions Delivered & 27,692,988 \\
+Total Clicks on Ads & 891,817 \\
+Total Unique Purchase Transactions & 111,910 \\
+Total Revenue & \$4,925,990 \\
+Click-Through Rate (CTR) & 3.22\% \\
+Conversion Rate (from Click to Purchase) & 12.55\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Several characteristics of the data are pertinent to our identification strategy. First, the dataset does not contain information on organic (non-sponsored) impressions or clicks. Second, the purchase data includes all transactions, without an explicit flag to distinguish ad-driven purchases from organic ones. A primary goal of our analysis is to infer this distinction. Third, metadata at the campaign level, such as advertising budgets and campaign durations, are not available. This limits our ability to analyze vendor-level strategic decisions directly.

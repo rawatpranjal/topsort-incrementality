@@ -1,0 +1,72 @@
+\section*{User Holdouts}
+
+In this section we leverage a randomized experiment implemented by the online marketplace. The marketplace assigned a portion of its user base to a holdout or control group, which was withheld from receiving advertising impressions. Our first objective is to identify the users who belonged to this experimental control group. Subsequently, we use this identified group to measure the impact of advertising on user spending.
+
+\subsection*{Detection}
+
+The objective was to identify users belonging to the pre-existing, marketplace-implemented randomized control group, whose defining characteristic was their exclusion from ad impressions despite being active purchasers. The scale of the data necessitated an iterative approach to ensure computational feasibility.
+
+The first phase of the identification procedure involved constructing a comprehensive universe of all eligible users. To be a candidate for the holdout group, a user must have made at least one purchase. This is the only way we are able to detect the presence of a user without having browsing data. A process was executed to query the `PURCHASES` table for each month of the sample period. The resulting monthly lists of unique user IDs were then consolidated into a single, de-duplicated master set of 4,926,305 purchasing users. This cohort formed the initial candidate pool from which the control group would be isolated.
+
+The core of the identification procedure was a weekly attrition algorithm designed to filter the candidate pool. The algorithm iterated week-by-week for 28 weeks, executing a query in each iteration to retrieve the set of all users who received an ad impression during that specific week. The set of these impressed users was then subtracted from the candidate set; any user found to have an impression was thus removed from the pool of potential holdout members. To ensure the stability of this long-running computation, the state of the candidate set was checkpointed after each weekly iteration, and detailed logs of users removed each week were maintained for auditability. The users remaining after the 28-week attrition process constituted the final, identified control group.
+
+The results of this identification process are summarized in Table \ref{tab:holdout_identification}.
+
+\begin{table}[htbp!]
+\centering
+\caption{Identification of Experimental Groups}
+\label{tab:holdout_identification}
+\begin{tabular}{lr}
+\toprule
+Group & Final User Count \\
+\midrule
+Treatment Group (Exposed to Ads) & 4,142,172 \\
+Control Group (Identified Holdout) & 784,133 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{Model}
+
+The experiment was active for the entire duration of the sample, with the control group being continuously withheld from ad exposure. To structure the analysis, the data was partitioned into two periods: Period 1 (2025-03-10 to 2025-06-30) and Period 2 (2025-07-01 onward). This split is not a pre-treatment/post-treatment division, but rather a temporal separation to allow for modeling future outcomes based on past behavior. The primary purpose of this partition is to define a stable analytical cohort and construct a set of control variables. The cohort was defined as users who were demonstrably active in the first half of the sample, having made three or more purchases in Period 1.
+
+The behavioral differences between the treatment and control groups observed in Period 1, shown in Table \ref{tab:covariate_balance}, are therefore not an indication of experimental imbalance, but rather a lasting treatment effect from the ongoing experiment. 
+
+\begin{table}[htbp!]
+\centering
+\caption{Behavioral Differences in Period 1 (Ongoing Treatment)}
+\label{tab:covariate_balance}
+\begin{tabular}{lrr}
+\toprule
+Period 1 Covariate & Treatment Group & Control Group \\
+\midrule
+Average Revenue & \$391.34 & \$238.40 \\
+Average Purchases & 9.30 & 5.91 \\
+Average Clicks & 48.92 & 3.38 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+To estimate the continued effect of the treatment in Period 2, we use a Double Machine Learning (DoubleML) model. The data from Period 1 is used to engineer the control variables, $X$, for the model, which include per-user average weekly revenue, purchases, clicks, and a tenure proxy. The outcome variable, $Y$, is the average weekly revenue in Period 2 for the same users. The DoubleML framework uses machine learning nuisance models (`LGBMRegressor` for the outcome and `LGBMClassifier` for the treatment) and cross-fitting to estimate the causal parameter, $\tau$, in the following model, controlling for the baseline user behavior established in Period 1:
+
+\begin{equation}
+Y = D \cdot \tau + g(X) + \epsilon
+\end{equation}
+
+\subsection*{Results}
+The ATE from the DoubleML estimation is presented in Table \ref{tab:ate_results}. The result indicates a statistically significant causal effect of advertising in Period 2, conditional on Period 1 behavior.
+
+\begin{table}[htbp!]
+\centering
+\caption{Average Treatment Effect of Advertising on Weekly Revenue in Period 2}
+\label{tab:ate_results}
+\begin{tabular}{lcccccc}
+\toprule
+ & Coef. & Std. Err. & t & P>|t| & [0.025 & 0.975] \\
+\midrule
+Treatment & 7.84 & 0.17 & 45.68 & <0.001 & 7.50 & 8.17 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The estimated ATE of 7.84 indicates that continued exposure to the marketplace's advertising program in Period 2 causes an average increase of \$7.84 in weekly revenue per user, beyond what would be predicted by their Period 1 behavior.

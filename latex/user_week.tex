@@ -1,0 +1,126 @@
+\section*{User-Week Panel}
+
+To analyze the impact of advertising at the individual level, we construct a user-week panel. This panel aggregates user activity over time, allowing us to model the relationship between ad clicks and revenue while controlling for user-specific and time-specific effects.
+
+Our user-week panel consists of over 31 million observations from more than 9 million unique users across 27 weeks. Table \ref{tab:user_panel_dims} provides a high-level overview of the panel's dimensions.
+
+\begin{table}[htbp!]
+\centering
+\caption{User-Week Panel Dimensions}
+\label{tab:user_panel_dims}
+\begin{tabular}{lr}
+\toprule
+Metric & Value \\
+\midrule
+Total Observations (User-Weeks) & 31,657,200 \\
+Unique Users & 9,183,985 \\
+Unique Weeks & 27 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A preliminary analysis of the data reveals several key characteristics. The distribution of clicks and revenue is highly skewed, as shown in Table \ref{tab:user_dist}. A large number of user-weeks have zero revenue (61.8\%).
+
+\begin{table}[htbp!]
+\centering
+\caption{Distribution of Key Metrics per User-Week}
+\label{tab:user_dist}
+\begin{tabular}{lrrr}
+\toprule
+Statistic & Clicks & Purchases & Revenue (\$) \\
+\midrule
+Mean & 4.63 & 0.66 & 29.79 \\
+Std. Dev. & 12.18 & 1.54 & 154.14 \\ 
+
+Min & 0 & 0 & 0.00 \\
+25\% & 1 & 0 & 0.00 \\
+50\% & 2 & 0 & 0.00 \\
+75\% & 4 & 1 & 25.00 \\
+Max & 4,035 & 540 & 1,661.84 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+We also identify a significant segment of \textit{organic purchasers} (18.0\% of users), who make purchases without any recorded ad clicks. This group serves as a useful control group in our analysis, representing a baseline of purchasing behavior in the absence of advertising influence. Table \ref{tab:user_segments} summarizes the key user segments.
+
+\begin{table}[htbp!]
+\centering
+\caption{Summary of Key User Segments}
+\label{tab:user_segments}
+\begin{tabular}{lrr}
+\toprule
+User Segment & User Count & Percentage of Total \\
+\midrule
+Total Unique Users & 9,183,985 & 100.00\% \\
+Organic Purchasers (Zero Clicks) & 1,656,111 & 18.03\% \\
+Late Joiners (Joined after first week) & 8,612,239 & 93.77\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{Model}
+
+To estimate the average causal effect of clicks on revenue, we employ a two-way fixed-effects model. This model controls for all time-invariant user-specific heterogeneity and any platform-wide shocks that occur in a given week. The model is specified as:
+
+\begin{equation}
+\log(\text{revenue}_{it} + 1) = \alpha_i + \gamma_t + \beta \log(\text{clicks}_{it} + 1) + \epsilon_{it}
+\end{equation}
+
+where $\text{revenue}_{it}$ is the revenue from user $i$ in week $t$, $\text{clicks}_{it}$ is the number of clicks by user $i$ in week $t$, $\alpha_i$ is a user fixed effect, $\gamma_t$ is a week fixed effect, and $\epsilon_{it}$ is the error term. We apply the log(x + 1) transformation to handle zero values while maintaining the interpretability of elasticities in the log-linear framework. The results from this model, estimated on a 25\% sample of the data, are presented in Table \ref{tab:user_fe_results}.
+
+\begin{table}[htbp!]
+\centering
+\caption{Fixed-Effects Model of User-Week Revenue}
+\label{tab:user_fe_results}
+\begin{tabular}{lc}
+\toprule
+ & log(revenue + 1) \\
+\midrule
+log(clicks + 1) & 0.0282 \\
+ & (0.0015) \\
+\midrule
+User Fixed Effects & Yes \\
+Week Fixed Effects & Yes \\
+Observations & 7,912,264 \\
+R-squared & 0.4617 \\
+Within R-squared & 0.0001 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Note: Standard errors are clustered at the user level. The coefficient for log(clicks + 1) is statistically significant at the p < 0.001 level.
+
+The estimated coefficient on log(clicks + 1) is small but statistically significant, suggesting that a 1\% increase in clicks is associated with a 0.028\% increase in revenue, on average. The low within R-squared value indicates that changes in clicks explain a very small portion of the variation in revenue within users over time.
+
+\subsection*{User Heterogeneity}
+
+To investigate how the effect of clicks varies across users, we estimate a mixed-effects model with random slopes for the click variable. The model is specified as:
+
+\begin{equation}
+\log(\text{revenue}_{it} + 1) = \beta_i \log(\text{clicks}_{it} + 1) + \alpha_i + \gamma_t + \epsilon_{it}
+\end{equation}
+
+where $\beta_i$ is a user-specific click elasticity coefficient. The distribution of the estimated user-specific slopes, $\hat{\beta}_i$, is summarized in Table \ref{tab:user_me_results}.
+
+\begin{table}[htbp!]
+\centering
+\caption{Distribution of User-Specific Click Elasticities ($\beta_i$)}
+\label{tab:user_me_results}
+\begin{tabular}{lr}
+\toprule
+Statistic & Value \\
+\midrule
+Mean & -0.2921 \\
+Std. Dev. & 0.4856 \\
+Min & -3.1188 \\
+25\% & -0.6183 \\
+50\% (Median) & -0.2533 \\
+75\% & -0.0495 \\
+Max & 2.5117 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The results show considerable heterogeneity in the effect of clicks across users. The mean user-specific slope is negative (-0.29), suggesting that for the average user, increased clicks are associated with decreased revenue.
+
+The negative elasticity likely reflects selection effects rather than causal relationships. Users with high purchase intent may proceed efficiently to purchase with minimal ad engagement, while users browsing without purchase intent may generate many clicks without converting.

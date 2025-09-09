@@ -20,12 +20,18 @@ We analyze six months of auction data from a large online marketplace to measure
 │   ├── main.tex       # Main document
 │   ├── vendor_week.tex # Vendor-level analysis
 │   ├── user_week.tex   # User-level analysis
-│   └── user_vendor_week.tex # User-vendor interaction analysis
+│   ├── user_vendor_week.tex # User-vendor interaction analysis
+│   └── holdouts.tex   # Holdout experiment results
 │
 ├── panel/             # Panel construction and analysis notebooks
 │   ├── vendor_week.ipynb
 │   ├── user_week.ipynb
 │   └── user_vendor_week.ipynb
+│
+├── holdouts/          # Natural experiment analysis
+│   ├── detect_holdouts.ipynb    # Holdout group detection
+│   ├── analyse_holdouts.ipynb   # Treatment effect analysis
+│   └── various reports (.txt)   # Analysis outputs
 │
 ├── rd/                # Regression discontinuity analysis
 │   └── rd.ipynb

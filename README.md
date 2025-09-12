@@ -75,15 +75,6 @@ The analysis employs multiple econometric approaches:
 - **Regression Discontinuity**: Leveraging sharp thresholds in ad auction mechanics
 - **Policy Impact Analysis**: Interrupted time series for marketplace policy changes
 
-## Key Findings
-
-Our analysis reveals:
-- Strong cointegration relationships between advertising metrics and marketplace outcomes
-- Two-factor structure in marketplace dynamics (core activity vs. discovery channel)
-- Significant heterogeneity in advertising effectiveness across vendor segments
-- Evidence of both short-run and long-run advertising effects with distinct adjustment speeds
-
-For detailed results and methodology, please refer to the paper in the `latex/` directory.
 
 ## Paper
 

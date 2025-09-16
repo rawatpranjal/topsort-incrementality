@@ -63,10 +63,10 @@ print("\n" + "="*80)
 print("DATA PREPARATION")
 print("="*80)
 
-clicks_df = pd.read_parquet('../data/hourly_clicks_2025-03-01_to_2025-09-30.parquet')
-purchases_df = pd.read_parquet('../data/hourly_purchases_2025-03-01_to_2025-09-30.parquet')
-impressions_df = pd.read_parquet('../data/hourly_impressions_2025-03-01_to_2025-09-30.parquet')
-auctions_df = pd.read_parquet('../data/hourly_auctions_2025-03-01_to_2025-09-30.parquet')
+clicks_df = pd.read_parquet('../../data/hourly_clicks.parquet')
+purchases_df = pd.read_parquet('../../data/hourly_purchases.parquet')
+impressions_df = pd.read_parquet('../../data/hourly_impressions.parquet')
+auctions_df = pd.read_parquet('../../data/hourly_auctions.parquet')
 
 # Merge all data
 merged = purchases_df.merge(

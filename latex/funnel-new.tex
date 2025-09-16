@@ -1,0 +1,80 @@
+\subsection{Dynamic Platform-Level Analysis: A Structural VAR Approach}
+To investigate the high-frequency causal dynamics of the advertising funnel, we adopt a time-series approach using a Bayesian Structural Vector Autoregression (BSVAR) model. This framework allows for the modeling of rich feedback loops and the tracing of dynamic propagation of unexpected shocks through the platform's ecosystem. Our methodology is grounded in the principles outlined in Ferroni & Canova (2021).
+
+\subsubsection{Data and Model Specification}
+Our analysis utilizes platform-level hourly aggregates for four endogenous variables: Auctions, Impressions, Clicks, and GMV. Following standard practice, we apply a log transformation to each series to stabilize variance. Unit root tests confirm the log-transformed series are non-stationary, while their first differences are stationary (Appendix A.1). The analysis therefore proceeds using the first difference of the logs.
+
+The data exhibits strong seasonality, which we model directly within a VAR with exogenous variables (VARX) framework. The reduced-form model is specified as:
+\begin{equation}
+    y_t = \sum_{i=1}^{p} \Phi_i y_{t-i} + \Phi_0 + \Gamma z_t + u_t
+\end{equation}
+where $y_t$ is the $4 \times 1$ vector of endogenous variables, $p=48$ is the lag order chosen to capture two full days of dynamic effects, and $z_t$ is a vector of deterministic seasonal dummy variables for the hour-of-day and day-of-week. The term $u_t$ is the vector of reduced-form residuals where $u_t \sim N(0, \Sigma)$.
+
+To identify causal relationships from the reduced-form model, we impose a theoretical structure that relates the observable residuals $u_t$ to a set of unobserved, orthogonal structural shocks, $\nu_t$. This relationship is $u_t = \Omega \nu_t$, where $\nu_t$ is the vector of structural shocks with $E(\nu_t \nu_t') = I$, and $\Omega$ is the contemporaneous impact matrix. We use a Cholesky decomposition, which imposes a recursive "Regular Funnel" ordering consistent with the logical flow of a user's journey:
+\begin{equation}
+\begin{pmatrix} u_{auc,t} \\ u_{imp,t} \\ u_{click,t} \\ u_{gmv,t} 
+\end{pmatrix} = 
+\begin{pmatrix} \omega_{11} & 0 & 0 & 0 \\ \omega_{21} & \omega_{22} & 0 & 0 \\ \omega_{31} & \omega_{32} & \omega_{33} & 0 \\ \omega_{41} & \omega_{42} & \omega_{43} & \omega_{44} 
+\end{pmatrix}
+\begin{pmatrix} \nu_{auc,t} \\ \nu_{imp,t} \\ \nu_{click,t} \\ \nu_{gmv,t} 
+\end{pmatrix}
+\end{equation}
+Given the high dimensionality of a VAR(48), we employ Bayesian estimation with a Minnesota prior. This prior regularizes the model by shrinking the coefficients towards a random walk assumption, which prevents overfitting and ensures model stability.
+
+\subsubsection{Causal Effects of Funnel Shocks: Impulse Response Functions}
+The SVAR allows us to trace the dynamic effect of a one-standard-deviation structural shock on the system. Table 7 presents the period-by-period impulse responses, while Table 8 shows the cumulative impact.
+
+\begin{table}[h!]
+\centering
+\caption{Period-by-Period Impulse Response Functions (Selected Horizons)}
+\label{tab:period_irf}
+\begin{tabular}{lccc}
+\hline
+Horizon & Resp. of GMV to Auction Shock & Resp. of GMV to Click Shock & Resp. of Clicks to Imp. Shock \\
+ & [95% CI] & [95% CI] & [95% CI] \\
+\hline
+0 Hours  & [Placeholder] & [Placeholder] & [Placeholder] \\
+6 Hours  & [Placeholder] & [Placeholder] & [Placeholder] \\
+12 Hours & [Placeholder] & [Placeholder] & [Placeholder] \\
+24 Hours & [Placeholder] & [Placeholder] & [Placeholder] \\
+48 Hours & [Placeholder] & [Placeholder] & [Placeholder] \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[h!]
+\centering
+\caption{Cumulative Impulse Response Functions (Selected Horizons)}
+\label{tab:cumul_irf}
+\begin{tabular}{lccc}
+\hline
+Horizon & Cum. Resp. of GMV to Auction Shock & Cum. Resp. of GMV to Click Shock & Cum. Resp. of Clicks to Imp. Shock \\
+ & [95% CI] & [95% CI] & [95% CI] \\
+\hline
+6 Hours  & [Placeholder] & [Placeholder] & [Placeholder] \\
+12 Hours & [Placeholder] & [Placeholder] & [Placeholder] \\
+24 Hours & [Placeholder] & [Placeholder] & [Placeholder] \\
+48 Hours & [Placeholder] & [Placeholder] & [Placeholder] \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{The Drivers of Revenue Volatility: Variance Decomposition}
+While IRFs trace the path of a single shock, the Forecast Error Variance Decomposition (FEVD) attributes the total unpredictable volatility of a variable to the different structural shocks.
+
+\begin{table}[h!]
+\centering
+\caption{Forecast Error Variance Decomposition for GMV}
+\label{tab:fevd}
+\begin{tabular}{lcccc}
+\hline
+Horizon & \multicolumn{4}{c}{\% of GMV Var. Explained by:} \\
+ & Auction Shocks & Impression Shocks & Click Shocks & GMV Shocks \\
+\hline
+1 Hour   & [Placeholder] & [Placeholder] & [Placeholder] & [Placeholder] \\
+12 Hours & [Placeholder] & [PLAYERHOLDER] & [Placeholder] & [Placeholder] \\
+24 Hours & [Placeholder] & [Placeholder] & [Placeholder] & [Placeholder] \\
+48 Hours & [Placeholder] & [Placeholder] & [Placeholder] & [Placeholder] \\
+\hline
+\end{tabular}
+\end{table}

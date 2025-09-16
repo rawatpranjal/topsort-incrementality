@@ -1,0 +1,79 @@
+\section*{The Advertising Funnel}
+
+In this section, we look at the relationships between upper-funnel metrics (impressions and clicks) and lower-funnel metrics (purchases/revenue). The goal is to assess whether upper-funnel metrics can be used as leading indicators for revenue. A strong funnel structure would imply that increases in impressions lead to increases in clicks, which in turn lead to increases in purchases. We analyze this using time series methods on aggregated daily data.
+
+To address the non-stationarity of the time series, we now turn to a Vector Autoregression (VAR) model on first-differenced data. This approach models the short-run relationships between the variables. The objective remains to assess the predictive power of upper-funnel metrics as leading indicators for revenue.
+
+The system is modeled as a VAR(p) process on the first-differenced log-transformed variables. Let $\Delta y_t = y_t - y_{t-1}$. The model has the form:
+$$ \Delta y_t = A_1 \Delta y_{t-1} + \dots + A_p \Delta y_{t-p} + C x_t + \epsilon_t $$
+where $A_i$ are coefficient matrices, $x_t$ contains exogenous variables (seasonal dummies), and $\epsilon_t$ is the error term. We estimate a daily model with seasonal controls.
+
+$$ y_t = \begin{pmatrix} \text{log(GMV}_t\text{)} \\ \text{log(clicks}_t\text{)} \\ \text{log(impressions}_t\text{)} \\ \text{log(auctions}_t\text{)} \end{pmatrix} $$
+
+Unit root tests on the first-differenced series indicate that the differenced GMV and click series may still contain a unit root. This suggests that a simple VAR on first differences may not be sufficient to capture all the dynamics, but we proceed with the analysis to examine the short-run relationships. We tested a VECM model but it found no cointegration (rank = 0) in the daily levels data, which means VECM is not appropriate for this dataset. This validates the original VAR approach on differenced data. We examine the Granger causality tests to identify leading indicators for revenue. The results for the daily first-differenced model are presented in Table \ref{tab:granger_causality_daily_full}.
+
+\begin{table}[htbp!]
+\centering
+\caption{Granger Causality Tests for Daily First-Differenced VAR Model}
+\label{tab:granger_causality_daily_full}
+\begin{tabular}{lcc}
+\toprule
+Direction & F-statistic & p-value \\
+\\\midrule
+$\Delta$log(clicks) $\rightarrow$ $\Delta$log(GMV) & 1.46 & 0.23 \\
+$\Delta$log(impressions) $\rightarrow$ $\Delta$log(GMV) & 1.53 & 0.22 \\
+$\Delta$log(auctions) $\rightarrow$ $\Delta$log(GMV) & 0.00 & 0.99 \\
+\\\midrule
+$\Delta$log(GMV) $\rightarrow$ $\Delta$log(clicks) & 4.67 & 0.03 \\
+$\Delta$log(impressions) $\rightarrow$ $\Delta$log(clicks) & 0.16 & 0.69 \\
+$\Delta$log(auctions) $\rightarrow$ $\Delta$log(clicks) & 0.13 & 0.72 \\
+\\\midrule
+$\Delta$log(GMV) $\rightarrow$ $\Delta$log(impressions) & 9.94 & 0.00 \\
+$\Delta$log(clicks) $\rightarrow$ $\Delta$log(impressions) & 7.64 & 0.01 \\
+$\Delta$log(auctions) $\rightarrow$ $\Delta$log(impressions) & 1.27 & 0.26 \\
+\\\midrule
+$\Delta$log(GMV) $\rightarrow$ $\Delta$log(auctions) & 0.00 & 0.95 \\
+$\Delta$log(clicks) $\rightarrow$ $\Delta$log(auctions) & 5.93 & 0.02 \\
+$\Delta$log(impressions) $\rightarrow$ $\Delta$log(auctions) & 6.68 & 0.01 \\\\
+\\\bottomrule
+\end{tabular}
+\end{table}
+
+The results from the daily first-differenced model do not show a strong funnel structure. The predictive relationships from upper-funnel metrics (impressions and clicks) to GMV are not statistically significant. However, we do observe significant feedback effects from GMV to the upper-funnel metrics. The Forecast Error Variance Decomposition (FEVD) in Table \ref{tab:fevd_daily_full} further illustrates this.
+
+\begin{table}[h!]
+\centering
+\caption{Forecast Error Variance Decomposition for the Daily Model}
+\label{tab:fevd_daily_full}
+\begin{tabular}{lccccc}
+\toprule
+ & & \multicolumn{4}{c}{Shock to} \\
+Response of & Horizon & $\Delta$log(GMV) & $\Delta$log(clicks) & $\Delta$log(impressions) & $\Delta$log(auctions) \\
+\\\midrule
+$\Delta$log(GMV) & 1 & 100.00\% & 0.00\% & 0.00\% & 0.00\% \\
+& 5 & 95.97\% & 3.37\% & 0.63\% & 0.02\% \\
+& 10 & 95.97\% & 3.37\% & 0.63\% & 0.02\% \\
+& 30 & 95.97\% & 3.37\% & 0.63\% & 0.02\% \\
+\\\midrule
+$\Delta$log(clicks) & 1 & 49.68\% & 50.32\% & 0.00\% & 0.00\% \\
+& 5 & 54.13\% & 45.74\% & 0.06\% & 0.07\% \\
+& 10 & 54.13\% & 45.74\% & 0.06\% & 0.07\% \\
+& 30 & 54.13\% & 45.74\% & 0.06\% & 0.07\% \\
+\\\midrule
+$\Delta$log(impressions) & 1 & 41.78\% & 26.00\% & 32.22\% & 0.00\% \\
+& 5 & 45.15\% & 21.10\% & 33.10\% & 0.65\% \\
+& 10 & 45.15\% & 21.10\% & 33.10\% & 0.65\% \\
+& 30 & 45.15\% & 21.10\% & 33.10\% & 0.65\% \\
+\\\midrule
+$\Delta$log(auctions) & 1 & 30.75\% & 0.71\% & 1.11\% & 67.43\% \\
+& 5 & 29.78\% & 1.36\% & 4.18\% & 64.68\% \\
+& 10 & 29.78\% & 1.36\% & 4.19\% & 64.67\% \\
+& 30 & 29.78\% & 1.36\% & 4.19\% & 64.67\% \\\\
+\\\bottomrule
+\end{tabular}
+\end{table}
+
+In the daily model, shocks to the growth rate of impressions and clicks account for less than 4\% of the forecast error variance in the growth rate of GMV. This suggests that at the daily level, the direct predictive power of the upper-funnel metrics on revenue is limited.
+
+The aggregated data is not enough to detect the impact of impressions or clicks on purchases. Clicks do seem to explain a small amount of variation in revenue. However, movements in purchases are able to explain future changes in auctions (searches), impressions/views and clicks (considerations). This is strong evidence of the feedback loop, where platform growth drives advertising. To look deeper into the effects of advertising on purchases, we turn to micro panel data. 
+

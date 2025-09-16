@@ -1,0 +1,15 @@
+\contentsline {subsection}{\numberline {0.1}Introduction}{3}{subsection.0.1}%
+\contentsline {subsection}{\numberline {0.2}Data and Context}{4}{subsection.0.2}%
+\contentsline {subsubsection}{\numberline {0.2.1}Descriptive Statistics}{4}{subsubsection.0.2.1}%
+\contentsline {subsubsection}{\numberline {0.2.2}Data Considerations}{5}{subsubsection.0.2.2}%
+\contentsline {subsection}{\numberline {0.3}Vendor-Week Panel Analysis}{5}{subsection.0.3}%
+\contentsline {subsubsection}{\numberline {0.3.1}Exploratory Data Analysis}{5}{subsubsection.0.3.1}%
+\contentsline {subsubsection}{\numberline {0.3.2}Two-Way Fixed-Effects Model}{5}{subsubsection.0.3.2}%
+\contentsline {subsubsection}{\numberline {0.3.3}Heterogeneity and Incremental ROAS}{6}{subsubsection.0.3.3}%
+\contentsline {subsubsection}{\numberline {0.3.4}Bayesian S-Curve Model}{6}{subsubsection.0.3.4}%
+\contentsline {subsection}{\numberline {0.4}User-Week Panel Analysis}{7}{subsection.0.4}%
+\contentsline {subsubsection}{\numberline {0.4.1}Exploratory Data Analysis}{7}{subsubsection.0.4.1}%
+\contentsline {subsubsection}{\numberline {0.4.2}Two-Way Fixed-Effects Model}{7}{subsubsection.0.4.2}%
+\contentsline {subsubsection}{\numberline {0.4.3}Mixed-Effects Model for Heterogeneity}{7}{subsubsection.0.4.3}%
+\contentsline {section}{\numberline {1}Combined Results and Discussion}{8}{section.1}%
+\contentsline {section}{\numberline {2}Conclusion}{8}{section.2}%
